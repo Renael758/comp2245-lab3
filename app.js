@@ -1,4 +1,3 @@
-// COMP2245 Lab 3 - Memory Game
 
 const fruits = [
     { name: "apple", symbol: "🍎" },
@@ -11,13 +10,11 @@ const fruits = [
     { name: "watermelon", symbol: "🍉" }
 ];
 
-// Shuffle the cards into a random order
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
-
     return array;
 }
 
@@ -33,11 +30,10 @@ let waiting = false;
 let timer = null;
 let matchedPairs = 0;
 
-// Build the game board
 function buildBoard() {
     deck = shuffle([...fruits, ...fruits]);
 
-    deck.forEach((fruit, i) => {
+    deck.forEach(function (fruit, i) {
         const card = document.createElement("button");
 
         card.type = "button";
@@ -49,51 +45,8 @@ function buildBoard() {
     });
 }
 
-// Create the initial board
-buildBoard();
-// Handle clicks on the game board
-board.addEventListener("click", function (event) {
-    const card = event.target;
-
-    // Ignore clicks that are not on a card
-    if (!card.classList.contains("card")) {
-        return;
-    }
-
-    // Ignore cards that are already turned over or matched
-    if (card.classList.contains("flipped") ||
-        card.classList.contains("matched")) {
-        return;
-    }
-
-    // Ignore clicks while unmatched cards are waiting to turn back
-    if (waiting) {
-        return;
-    }
-
-    // Find the fruit belonging to this card
-    const fruit = deck[Number(card.dataset.index)];
-
-    // Turn the card over
-    card.textContent = fruit.symbol;
-    card.classList.add("flipped");
-    card.setAttribute(
-        "aria-label",
-        `Card ${Number(card.dataset.index) + 1}, ${fruit.name}`
-    );
-
-    // Remember the card that was turned over
-    turnedCards.push(card);
-
-    // Continue when two cards have been turned over
-    if (turnedCards.length === 2) {
-        checkMatch();
-    }
-});
-// Compare the two turned-over cards
 function checkMatch() {
     moves++;
-
     movesDisplay.textContent = moves;
 
     const firstCard = turnedCards[0];
@@ -102,7 +55,6 @@ function checkMatch() {
     const firstFruit = deck[Number(firstCard.dataset.index)];
     const secondFruit = deck[Number(secondCard.dataset.index)];
 
-    // Check whether the fruit names match
     if (firstFruit.name === secondFruit.name) {
         firstCard.classList.add("matched");
         secondCard.classList.add("matched");
@@ -111,25 +63,20 @@ function checkMatch() {
         secondCard.disabled = true;
 
         matchedPairs++;
-
         statusDisplay.textContent = "That's a pair!";
 
         turnedCards = [];
 
-                // Check whether all eight pairs have been found
         if (matchedPairs === 8) {
             statusDisplay.textContent =
                 `You found all the pairs in ${moves} moves!`;
 
             statusDisplay.classList.add("you-won");
         }
-      } else {
+    } else {
         statusDisplay.textContent = "Not a pair. Try again.";
-
-        // Prevent the player from clicking another card
         waiting = true;
 
-        // Turn the cards back over after one second
         timer = setTimeout(function () {
             turnedCards.forEach(function (card) {
                 card.textContent = "";
@@ -146,3 +93,62 @@ function checkMatch() {
             timer = null;
         }, 1000);
     }
+}
+
+function startNewGame() {
+    if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+    }
+
+    waiting = false;
+    turnedCards = [];
+    moves = 0;
+    matchedPairs = 0;
+
+    movesDisplay.textContent = moves;
+    statusDisplay.textContent =
+        "Turn over two cards to find a matching pair.";
+
+    statusDisplay.classList.remove("you-won");
+
+    board.replaceChildren();
+    buildBoard();
+}
+
+board.addEventListener("click", function (event) {
+    const card = event.target;
+
+    if (!card.classList.contains("card")) {
+        return;
+    }
+
+    if (card.classList.contains("flipped") ||
+        card.classList.contains("matched")) {
+        return;
+    }
+
+    if (waiting) {
+        return;
+    }
+
+    const fruit = deck[Number(card.dataset.index)];
+
+    card.textContent = fruit.symbol;
+    card.classList.add("flipped");
+
+    card.setAttribute(
+        "aria-label",
+        `Card ${Number(card.dataset.index) + 1}, ${fruit.name}`
+    );
+
+    turnedCards.push(card);
+
+    if (turnedCards.length === 2) {
+        checkMatch();
+    }
+});
+
+newGameButton.addEventListener("click", startNewGame);
+
+buildBoard();
