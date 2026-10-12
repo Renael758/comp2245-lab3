@@ -116,7 +116,13 @@ function checkMatch() {
 
         turnedCards = [];
 
-        // Exercise 5 will add the win check here.
+                // Check whether all eight pairs have been found
+        if (matchedPairs === 8) {
+            statusDisplay.textContent =
+                `You found all the pairs in ${moves} moves!`;
+
+            statusDisplay.classList.add("you-won");
+        }
       } else {
         statusDisplay.textContent = "Not a pair. Try again.";
 
