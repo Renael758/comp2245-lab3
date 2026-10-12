@@ -90,3 +90,36 @@ board.addEventListener("click", function (event) {
         checkMatch();
     }
 });
+// Compare the two turned-over cards
+function checkMatch() {
+    moves++;
+
+    movesDisplay.textContent = moves;
+
+    const firstCard = turnedCards[0];
+    const secondCard = turnedCards[1];
+
+    const firstFruit = deck[Number(firstCard.dataset.index)];
+    const secondFruit = deck[Number(secondCard.dataset.index)];
+
+    // Check whether the fruit names match
+    if (firstFruit.name === secondFruit.name) {
+        firstCard.classList.add("matched");
+        secondCard.classList.add("matched");
+
+        firstCard.disabled = true;
+        secondCard.disabled = true;
+
+        matchedPairs++;
+
+        statusDisplay.textContent = "That's a pair!";
+
+        turnedCards = [];
+
+        // Exercise 5 will add the win check here.
+    } else {
+        statusDisplay.textContent = "Not a pair. Try again.";
+
+        // Exercise 4 will handle unmatched cards.
+    }
+}
