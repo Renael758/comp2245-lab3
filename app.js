@@ -51,3 +51,42 @@ function buildBoard() {
 
 // Create the initial board
 buildBoard();
+// Handle clicks on the game board
+board.addEventListener("click", function (event) {
+    const card = event.target;
+
+    // Ignore clicks that are not on a card
+    if (!card.classList.contains("card")) {
+        return;
+    }
+
+    // Ignore cards that are already turned over or matched
+    if (card.classList.contains("flipped") ||
+        card.classList.contains("matched")) {
+        return;
+    }
+
+    // Ignore clicks while unmatched cards are waiting to turn back
+    if (waiting) {
+        return;
+    }
+
+    // Find the fruit belonging to this card
+    const fruit = deck[Number(card.dataset.index)];
+
+    // Turn the card over
+    card.textContent = fruit.symbol;
+    card.classList.add("flipped");
+    card.setAttribute(
+        "aria-label",
+        `Card ${Number(card.dataset.index) + 1}, ${fruit.name}`
+    );
+
+    // Remember the card that was turned over
+    turnedCards.push(card);
+
+    // Continue when two cards have been turned over
+    if (turnedCards.length === 2) {
+        checkMatch();
+    }
+});
