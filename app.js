@@ -117,9 +117,26 @@ function checkMatch() {
         turnedCards = [];
 
         // Exercise 5 will add the win check here.
-    } else {
+      } else {
         statusDisplay.textContent = "Not a pair. Try again.";
 
-        // Exercise 4 will handle unmatched cards.
+        // Prevent the player from clicking another card
+        waiting = true;
+
+        // Turn the cards back over after one second
+        timer = setTimeout(function () {
+            turnedCards.forEach(function (card) {
+                card.textContent = "";
+                card.classList.remove("flipped");
+
+                card.setAttribute(
+                    "aria-label",
+                    `Card ${Number(card.dataset.index) + 1}, face down`
+                );
+            });
+
+            turnedCards = [];
+            waiting = false;
+            timer = null;
+        }, 1000);
     }
-}
